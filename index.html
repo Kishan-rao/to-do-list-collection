@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Collection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+
+        .react-link {
+            background-color: #61dafb;
+            color: #20232a;
+        }
+
+        .react-link:hover {
+            background-color: #4fa8d1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>To-Do List Collection</h1>
+        <div class="links">
+            <a href="./vanilla/index.html">Vanilla JS Version</a>
+            <a href="./react-todo/dist/index.html" class="react-link">React Version</a>
+        </div>
+    </div>
+</body>
+
+</html>

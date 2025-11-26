@@ -2,14 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { storage } from '../utils/storage';
 
 export function useTodos() {
-    const [todos, setTodos] = useState([]);
-    const [filter, setFilter] = useState('all');
+    // Fix Persistence: Lazy initialization
+    const [todos, setTodos] = useState(() => storage.getTodos());
+    // Default Filter: Active
+    const [filter, setFilter] = useState('active');
 
-    // Load initial data
-    useEffect(() => {
-        const savedTodos = storage.getTodos();
-        setTodos(savedTodos);
-    }, []);
+    // Bulk Selection State
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
+    const [selectedIds, setSelectedIds] = useState(new Set());
 
     // Save on change
     useEffect(() => {
@@ -49,6 +49,54 @@ export function useTodos() {
         }));
     }, []);
 
+    // Bulk Action Handlers
+    const toggleSelectionMode = useCallback(() => {
+        setIsSelectionMode(prev => {
+            if (prev) setSelectedIds(new Set()); // Clear selection on exit
+            return !prev;
+        });
+    }, []);
+
+    const toggleSelect = useCallback((id) => {
+        setSelectedIds(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(id)) {
+                newSet.delete(id);
+            } else {
+                newSet.add(id);
+            }
+            return newSet;
+        });
+    }, []);
+
+    const bulkDelete = useCallback(() => {
+        setTodos(prev => prev.filter(todo => !selectedIds.has(todo.id)));
+        setSelectedIds(new Set());
+        setIsSelectionMode(false);
+    }, [selectedIds]);
+
+    const bulkComplete = useCallback(() => {
+        setTodos(prev => prev.map(todo => {
+            if (selectedIds.has(todo.id)) {
+                return { ...todo, completed: true, updatedAt: new Date().toISOString() };
+            }
+            return todo;
+        }));
+        setSelectedIds(new Set());
+        setIsSelectionMode(false);
+    }, [selectedIds]);
+
+    const bulkActivate = useCallback(() => {
+        setTodos(prev => prev.map(todo => {
+            if (selectedIds.has(todo.id)) {
+                return { ...todo, completed: false, updatedAt: new Date().toISOString() };
+            }
+            return todo;
+        }));
+        setSelectedIds(new Set());
+        setIsSelectionMode(false);
+    }, [selectedIds]);
+
     const filteredTodos = todos.filter(todo => {
         if (filter === 'active') return !todo.completed;
         if (filter === 'completed') return todo.completed;
@@ -63,6 +111,14 @@ export function useTodos() {
         addTodo,
         toggleTodo,
         deleteTodo,
-        editTodo
+        editTodo,
+        // Bulk exports
+        isSelectionMode,
+        selectedIds,
+        toggleSelectionMode,
+        toggleSelect,
+        bulkDelete,
+        bulkComplete,
+        bulkActivate
     };
 }
